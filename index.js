@@ -90,6 +90,16 @@ async function run() {
       const result = await roomsCollection.find().toArray()
       res.send(result)
     })
+
+    // get single room data from db using Id
+     app.get('/room/:id', async (req,res) => {
+      const id = req.params.id
+      console.log(id)
+      const query = {_id: new ObjectId(id)}
+      const result = await roomsCollection.findOne(query)
+      console.log(result)
+      res.send(result)
+     })
     // Send a ping to confirm a successful connection
     await client.db('admin').command({ ping: 1 })
     console.log(
