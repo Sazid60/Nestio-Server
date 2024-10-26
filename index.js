@@ -88,28 +88,45 @@ async function run() {
     // get all rooms
     app.get('/rooms', async (req, res) => {
       const category = req.query.category
-      let query ={}
+      let query = {}
       // if(category) query={category: category}
-      if(category && category !== 'null') query={category}
+      if (category && category !== 'null') query = { category }
       const result = await roomsCollection.find(query).toArray()
       res.send(result)
     })
 
     // Save a room data in DB
-    app.post('/room', async(req,res)=>{
+    app.post('/room', async (req, res) => {
       const roomData = req.body
-      const result = await  roomsCollection.insertOne(roomData)
+      const result = await roomsCollection.insertOne(roomData)
       res.send(result)
     })
+
+    // get all rooms for host
+    app.get('/my-listings/:email', async (req, res) => {
+      const email = req.params.email
+      let query = {'host.email':email}
+      const result = await roomsCollection.find(query).toArray()
+      res.send(result)
+    })
+
     // get single room data from db using Id
-     app.get('/room/:id', async (req,res) => {
+    app.get('/room/:id', async (req, res) => {
       const id = req.params.id
       // console.log(id)
-      const query = {_id: new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await roomsCollection.findOne(query)
       // console.log(result)
       res.send(result)
-     })
+    })
+
+    // delete a room
+    app.delete('/room/:id', async(req, res)=>{
+      const id = req.params.id
+      const query= {_id : new ObjectId(id)}
+      const result = await roomsCollection.deleteOne(query)
+      res.send(result)
+    })
     // Send a ping to confirm a successful connection
     await client.db('admin').command({ ping: 1 })
     console.log(
